@@ -63,17 +63,67 @@ export const reservarHora = onCall({ cors: true, region: "southamerica-west1" },
     const data = request.data;
     const esHumano = await verificarRecaptcha(data.recaptchaToken);
     if (!esHumano) throw new HttpsError("permission-denied", "Validación fallida.");
-    if (!data.nombre || !data.email || !data.fecha || !data.hora) throw new HttpsError("invalid-argument", "Datos incompletos.");
+
+    // Sanitización del teléfono para ID único
+    const phoneId = data.telefono.replace(/\D/g, ''); 
+    if (!data.nombre || !data.email || !data.fecha || !data.hora || !phoneId) {
+        throw new HttpsError("invalid-argument", "Datos incompletos.");
+    }
+
     const citasRef = db.collection("citas");
+    const pacienteRef = db.collection("pacientes").doc(phoneId);
+
+    // BÚSQUEDA DE REINCIDENCIA (INTELIGENCIA DE NEGOCIO)
+    const prevCitasSnap = await citasRef.where("telefono", "==", data.telefono).get();
+    const citasAnteriores = prevCitasSnap.docs
+        .filter(d => d.data().estado !== "cancelado")
+        .map(d => `${formatearFechaLatina(d.data().fecha)} a las ${d.data().hora}`);
+    
+    const esAntiguo = citasAnteriores.length > 0;
+    let alertaAdmin = "";
+
+    if (esAntiguo) {
+        alertaAdmin = `⚠️ El paciente "${data.nombre}" antiguo volvió a agendar sesión desde la web nuevamente.\n`;
+        alertaAdmin += `📍 Paciente "${data.nombre}" tiene ${citasAnteriores.length + 1} agendamientos registrados por él mismo en la web.\n`;
+        alertaAdmin += `📅 Historial registrado: ${citasAnteriores.join(", ")}.`;
+    }
+
     return db.runTransaction(async (t) => {
         const q = citasRef.where("fecha", "==", data.fecha).where("hora", "==", data.hora);
         const s = await t.get(q);
         if (s.docs.find(d => d.data().estado !== "cancelado")) throw new HttpsError("already-exists", "Ocupado.");
-        t.set(citasRef.doc(), { ...data, estado: "confirmada", createdAt: admin.firestore.FieldValue.serverTimestamp() });
+        
+        t.set(citasRef.doc(), { 
+            ...data, 
+            pacienteId: phoneId, 
+            estado: "confirmada", 
+            alertaSistema: alertaAdmin,
+            createdAt: admin.firestore.FieldValue.serverTimestamp() 
+        });
+
+        t.set(pacienteRef, {
+            nombre: data.nombre,
+            email: data.email,
+            telefono: data.telefono,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
     }).then(async () => {
         const contenido = `<p>Hola <strong>${data.nombre}</strong>,</p><p>He recibido tu solicitud de reserva para el <strong>${formatearFechaLatina(data.fecha)}</strong> a las <strong>${data.hora} hrs</strong>.</p>`;
         const btnWsp = `<a href="${LINK_WHATSAPP}" class="button" style="background:#25d366;">CONTACTAR VÍA WHATSAPP</a>`;
+        
+        // Mail al paciente
         await transporter.sendMail({ from: `"Ps. Matías Traslaviña" <${process.env.GMAIL_USER}>`, to: data.email, subject: `Reserva Recibida`, html: generarCuerpoMail("Confirmación de Sesión", contenido, btnWsp) });
+
+        // Mail interno a Matías si hay reincidencia
+        if (esAntiguo) {
+            await transporter.sendMail({
+                from: `"Sistema psmtraslavina.cl" <${process.env.GMAIL_USER}>`,
+                to: process.env.GMAIL_USER,
+                subject: `ALERT: Reincidencia Detectada - ${data.nombre}`,
+                text: alertaAdmin
+            });
+        }
         return { success: true };
     });
 });
@@ -82,14 +132,4 @@ export const obtenerDisponibilidadMes = onCall({ cors: true, region: "southameri
     const p = `${req.data.year}-${req.data.month.toString().padStart(2,"0")}`;
     const s = await db.collection("citas").where("fecha", ">=", `${p}-01`).where("fecha", "<=", `${p}-31`).get();
     return s.docs.filter(d => d.data().estado !== "cancelado").map(d => ({ fecha: d.data().fecha, hora: d.data().hora }));
-});
-
-export const listarPacientes = onCall({ cors: true, region: "southamerica-west1" }, async () => {
-    const snap = await db.collection("pacientes").orderBy("nombre").get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-});
-
-export const obtenerHistorialClinico = onCall({ cors: true, region: "southamerica-west1" }, async (req) => {
-    const snap = await db.collection("pacientes").doc(req.data.idPaciente).collection("historial").orderBy("createdAt", "desc").get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data(), created: d.data().createdAt?.toDate().toISOString() }));
 });
