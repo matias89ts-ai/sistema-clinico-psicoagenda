@@ -2,89 +2,234 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin | psmtraslavina.cl</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Clínica | psmtraslavina.cl</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; font-family: 'Inter', sans-serif; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-primary { background: #10b981; transition: all 0.3s ease; }
+        .btn-primary:hover { background: #059669; transform: translateY(-1px); shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2); }
+    </style>
 </head>
-<body class="bg-[#0f172a] text-slate-100 p-8 min-h-screen">
-    <div id="authContainer" class="max-w-md mx-auto mt-20 p-10 bg-slate-800 rounded-3xl shadow-2xl">
-        <h1 class="text-2xl font-serif font-bold text-white mb-8 text-center uppercase tracking-widest">Acceso Privado</h1>
-        <input type="email" id="adminEmail" placeholder="Email" class="w-full p-4 mb-4 bg-slate-700 rounded-xl outline-none">
-        <input type="password" id="adminPass" placeholder="Contraseña" class="w-full p-4 mb-8 bg-slate-700 rounded-xl outline-none">
-        <button id="loginBtn" class="w-full bg-emerald-600 py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-emerald-500 transition-all">Ingresar</button>
-        <p id="errorMsg" class="text-red-400 mt-4 text-sm hidden text-center"></p>
+<body class="min-h-screen overflow-x-hidden">
+
+    <!-- LOGIN / RECOVERY VIEW -->
+    <div id="authContainer" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0f172a] p-6">
+        <div class="w-full max-w-md glass-card p-10 rounded-[2.5rem] shadow-2xl fade-in text-center border-t-4 border-t-emerald-500">
+            <div class="mb-8">
+                <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-serif font-bold text-white tracking-widest uppercase">Sistema Clínico</h1>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold tracking-[0.3em] uppercase">psmtraslavina.cl</p>
+            </div>
+
+            <!-- Form: Login -->
+            <div id="loginForm" class="space-y-4">
+                <div class="relative text-left">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block tracking-widest">Usuario</label>
+                    <input type="email" id="adminEmail" class="w-full bg-slate-900/50 border border-slate-700 p-4 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm">
+                </div>
+                <div class="relative text-left">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block tracking-widest">Contraseña</label>
+                    <input type="password" id="adminPass" class="w-full bg-slate-900/50 border border-slate-700 p-4 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm">
+                </div>
+                <button id="loginBtn" class="w-full btn-primary py-4 rounded-2xl font-bold uppercase tracking-widest text-xs mt-4">Validar Credenciales</button>
+                <button id="showRecovery" class="text-[10px] text-slate-500 hover:text-emerald-400 uppercase font-bold tracking-widest mt-6 transition-colors">¿Problemas con el acceso?</button>
+            </div>
+
+            <!-- Form: Recovery -->
+            <div id="recoveryForm" class="hidden space-y-4 fade-in">
+                <p class="text-sm text-slate-400 mb-6 font-light">Se enviará un enlace de recuperación a tu correo electrónico institucional.</p>
+                <input type="email" id="recoveryEmail" placeholder="Email de respaldo" class="w-full bg-slate-900/50 border border-slate-700 p-4 rounded-2xl outline-none focus:border-emerald-500 text-sm">
+                <button id="sendRecoveryBtn" class="w-full bg-slate-700 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs">Enviar enlace</button>
+                <button id="backToLogin" class="text-[10px] text-slate-500 hover:text-white uppercase font-bold tracking-widest mt-4">Regresar</button>
+            </div>
+
+            <div id="authMsg" class="hidden mt-6 p-3 rounded-xl text-[10px] font-bold uppercase tracking-widest"></div>
+        </div>
     </div>
 
-    <div id="adminPanel" class="hidden max-w-6xl mx-auto animate-fade-in">
-        <header class="flex justify-between items-center mb-12">
-            <div><h1 class="text-3xl font-bold text-white font-serif">Panel Clínico</h1><p class="text-slate-400 uppercase text-[10px] tracking-widest font-bold">psmtraslavina.cl</p></div>
-            <div id="metricas" class="flex gap-4">
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 text-center min-w-[140px]">
-                    <p class="text-[10px] uppercase text-slate-500 font-bold mb-1">Pacientes Totales</p>
-                    <p id="countPacientes" class="text-3xl font-bold text-emerald-400">...</p>
+    <!-- DASHBOARD VIEW -->
+    <div id="adminPanel" class="hidden min-h-screen flex flex-col">
+        <!-- Top Navigation -->
+        <nav class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-8 py-4 flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-white text-slate-900 rounded-lg flex items-center justify-center font-serif font-bold text-xl">M</div>
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-500">Panel de Control</h2>
+                    <p class="text-[10px] text-slate-500 font-medium">Ps. Matías Traslaviña Santana</p>
                 </div>
             </div>
-        </header>
-        <div class="grid lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-1"><h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="users" class="text-emerald-500"></i> Directorio</h2><div id="listaPacientes" class="space-y-3"></div></div>
-            <div class="lg:col-span-2 bg-slate-800/50 rounded-3xl p-8 border border-slate-700 min-h-[500px]" id="detallePaciente">
-                <div class="flex flex-col items-center justify-center h-full opacity-30 italic"><i data-lucide="user-check" class="w-20 h-20 mb-4"></i><p>Selecciona un paciente para ver la ficha clínica</p></div>
+            
+            <div class="flex items-center gap-8">
+                <div class="hidden md:flex gap-6">
+                    <div class="text-center">
+                        <p class="text-[9px] uppercase text-slate-500 font-bold tracking-widest">Pacientes</p>
+                        <p id="countPacientes" class="text-lg font-bold text-white">-</p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/50 transition-all text-slate-400 hover:text-red-500">
+                    <i data-lucide="power" class="w-5 h-5"></i>
+                </button>
             </div>
+        </nav>
+
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar: Lista -->
+            <aside class="w-full md:w-80 border-r border-slate-800 flex flex-col bg-slate-900/20">
+                <div class="p-6 border-b border-slate-800">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-600"></i>
+                        <input type="text" id="pacienteSearch" placeholder="Buscar paciente..." class="w-full bg-slate-800/50 border border-slate-700 pl-10 p-3 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <div id="listaPacientes" class="flex-1 overflow-y-auto sidebar-scroll p-4 space-y-2">
+                    <!-- Dinámico -->
+                </div>
+            </aside>
+
+            <!-- Main Content: Ficha Clínica -->
+            <main class="flex-1 bg-[#0a0f1d] p-8 md:p-12 overflow-y-auto overflow-x-hidden">
+                <div id="detallePaciente" class="max-w-4xl mx-auto h-full flex flex-col">
+                    <div class="flex flex-col items-center justify-center h-full opacity-10 text-center select-none">
+                        <i data-lucide="folder-kanban" class="w-32 h-32 mb-6"></i>
+                        <h3 class="text-2xl font-serif">Seleccione un expediente</h3>
+                        <p class="text-sm tracking-widest uppercase mt-2">psmtraslavina.cl - Gestión de Identidad Clínica</p>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
         
         const config = { apiKey: "AIzaSyCvDoXguIABAkbf9XtpFjuSANv5W5PN0Ac", authDomain: "psmtraslavina.firebaseapp.com", projectId: "psmtraslavina", storageBucket: "psmtraslavina.firebasestorage.app", messagingSenderId: "148977142597", appId: "1:148977142597:web:7c9374ff780fcf913ccc2c" };
         const app = initializeApp(config);
         const auth = getAuth(app);
         const functions = getFunctions(app, "southamerica-west1");
+        
         const listarPacientes = httpsCallable(functions, "listarPacientes");
         const obtenerMetricas = httpsCallable(functions, "obtenerMetricas");
 
+        lucide.createIcons();
+
+        // UI Helpers
+        const showAuthMsg = (msg, isError = true) => {
+            const el = document.getElementById("authMsg");
+            el.innerText = msg;
+            el.className = `mt-6 p-4 rounded-xl text-[10px] font-bold uppercase tracking-widest ${isError ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`;
+            el.classList.remove("hidden");
+        };
+
+        // Login Logic
         document.getElementById("loginBtn").onclick = async () => {
             const email = document.getElementById("adminEmail").value;
             const pass = document.getElementById("adminPass").value;
-            try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { 
-                document.getElementById("errorMsg").innerText = "Credenciales inválidas";
-                document.getElementById("errorMsg").classList.remove("hidden");
-            }
+            if(!email || !pass) return showAuthMsg("Complete los campos");
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { showAuthMsg("Credenciales Inválidas"); }
         };
 
+        // Recovery Logic
+        document.getElementById("showRecovery").onclick = () => { document.getElementById("loginForm").classList.add("hidden"); document.getElementById("recoveryForm").classList.remove("hidden"); };
+        document.getElementById("backToLogin").onclick = () => { document.getElementById("recoveryForm").classList.add("hidden"); document.getElementById("loginForm").classList.remove("hidden"); };
+        document.getElementById("sendRecoveryBtn").onclick = async () => {
+            const email = document.getElementById("recoveryEmail").value;
+            try { await sendPasswordResetEmail(auth, email); showAuthMsg("Enlace enviado al correo", false); } 
+            catch (e) { showAuthMsg("Error al procesar solicitud"); }
+        };
+
+        document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => window.location.reload());
+
+        // Session Watcher
         onAuthStateChanged(auth, user => {
             if (user) {
                 document.getElementById("authContainer").classList.add("hidden");
                 document.getElementById("adminPanel").classList.remove("hidden");
-                cargarDatos();
+                cargarDashboard();
             }
         });
 
-        async function cargarDatos() {
+        async function cargarDashboard() {
             try {
                 const [p, m] = await Promise.all([listarPacientes(), obtenerMetricas()]);
                 document.getElementById("countPacientes").innerText = m.data.pacientes;
-                document.getElementById("listaPacientes").innerHTML = p.data.map(p => `
-                    <button onclick="verPaciente('${p.id}')" class="w-full text-left p-5 bg-slate-800 border border-slate-700 rounded-2xl hover:border-emerald-500 transition-all group">
-                        <p class="font-bold text-white group-hover:text-emerald-400">${p.nombre}</p>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-1">${p.telefono}</p>
+                const lista = document.getElementById("listaPacientes");
+                
+                lista.innerHTML = p.data.map(pac => `
+                    <button onclick="verFicha('${pac.id}', '${pac.nombre}', '${pac.email}', '${pac.telefono}')" class="w-full text-left p-4 rounded-2xl bg-slate-800/30 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-800 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-[10px] font-bold">${pac.nombre.charAt(0)}</div>
+                            <div>
+                                <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">${pac.nombre}</p>
+                                <p class="text-[9px] text-slate-500 font-medium tracking-tighter">${pac.id}</p>
+                            </div>
+                        </div>
                     </button>
                 `).join('');
                 lucide.createIcons();
             } catch (e) { console.error(e); }
         }
 
-        window.verPaciente = (id) => {
-            document.getElementById("detallePaciente").innerHTML = `
-                <div class="flex justify-between items-start mb-10">
-                    <div><h2 class="text-3xl font-bold font-serif">Ficha: ${id}</h2><p class="text-emerald-400 font-bold uppercase text-xs tracking-widest">Estado: Activo</p></div>
-                    <button class="bg-slate-700 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Nueva Nota</button>
+        window.verFicha = (id, nombre, email, telefono) => {
+            const main = document.getElementById("detallePaciente");
+            main.innerHTML = `
+                <div class="fade-in space-y-8">
+                    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[9px] font-bold uppercase tracking-widest mb-3 border border-emerald-500/20">Expediente Activo</div>
+                            <h2 class="text-4xl font-serif font-bold text-white">${nombre}</h2>
+                            <p class="text-slate-500 text-xs mt-1 font-medium italic">Identificador Único: ${id}</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button class="p-3 bg-slate-800 rounded-xl border border-slate-700 hover:text-emerald-400 transition-all"><i data-lucide="phone" class="w-5 h-5"></i></button>
+                            <button class="p-3 bg-slate-800 rounded-xl border border-slate-700 hover:text-emerald-400 transition-all"><i data-lucide="mail" class="w-5 h-5"></i></button>
+                            <button class="bg-emerald-600 px-6 py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-emerald-500 transition-all shadow-lg">Nueva Evolución</button>
+                        </div>
+                    </header>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2 space-y-6">
+                            <div class="bg-slate-800/40 border border-slate-800 p-8 rounded-[2rem]">
+                                <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center gap-2"><i data-lucide="history" class="w-3 h-3"></i> Historial de Sesiones Web</h4>
+                                <div class="space-y-4">
+                                    <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800 italic text-sm text-slate-400">
+                                        Cargando logs de actividad para el ID ${id}...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-[2rem]">
+                                <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-4">Datos de Contacto</h4>
+                                <div class="space-y-4 text-xs font-medium">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-slate-600 uppercase text-[8px]">Teléfono Móvil</span>
+                                        <span class="text-white">${telefono}</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-slate-600 uppercase text-[8px]">Correo Electrónico</span>
+                                        <span class="text-white">${email}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-4 text-slate-400 italic text-sm"><p>Cargando historial clínico con ID de teléfono...</p></div>
             `;
-        }
+            lucide.createIcons();
+        };
     </script>
 </body>
 </html>
