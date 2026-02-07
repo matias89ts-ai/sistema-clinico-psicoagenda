@@ -1,0 +1,14 @@
+# Compiled JavaScript files
+lib/
+
+# TypeScript definitions
+*.d.ts
+*.d.ts.map
+
+# Node Modules
+node_modules/
+
+# Logs
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*

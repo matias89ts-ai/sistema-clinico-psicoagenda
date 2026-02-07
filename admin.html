@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - M. Traslaviña</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+
+<body class="p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800">Panel de Administración</h1>
+            <button onclick="logout()" class="text-sm text-red-600 hover:underline">Cerrar Sesión</button>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-700">Próximas Citas</h2>
+                <button onclick="cargarCitas()"
+                    class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-700 transition">
+                    ↻ Actualizar
+                </button>
+            </div>
+
+            <div id="loading" class="text-center py-10 hidden">
+                <div class="animate-spin text-4xl mb-2">⟳</div>
+                <p class="text-slate-500">Cargando citas...</p>
+            </div>
+
+            <div id="citasContainer" class="space-y-4">
+                <!-- Citas inyectadas aquí -->
+            </div>
+
+            <div id="emptyState"
+                class="hidden text-center py-10 text-slate-500 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                No hay citas agendadas.
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-functions.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvDoXguIABAkbf9XtpFjuSANv5W5PN0Ac",
+            authDomain: "psmtraslavina.firebaseapp.com",
+            projectId: "psmtraslavina",
+            storageBucket: "psmtraslavina.firebasestorage.app",
+            messagingSenderId: "148977142597",
+            appId: "1:148977142597:web:7c9374ff780fcf913ccc2c",
+            measurementId: "G-WWRETCJNLC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const functions = getFunctions(app);
+
+        // Simple Password Protection
+        const checkAuth = () => {
+            if (localStorage.getItem('adminAuth') !== 'true') {
+                const pass = prompt('Ingrese contraseña de administrador:');
+                if (pass === 'psico2026') {
+                    localStorage.setItem('adminAuth', 'true');
+                } else {
+                    alert('Contraseña incorrecta');
+                    window.location.reload();
+                    throw new Error('Unauthorized');
+                }
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('adminAuth');
+            location.reload();
+        };
+
+        // Render Functions
+        const renderCita = (cita) => {
+            const div = document.createElement('div');
+            div.className = "bg-white border border-slate-200 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-shadow";
+            div.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Confirmada</span>
+                        <span class="text-slate-500 text-sm">${cita.fecha || 'Sin fecha'} - ${cita.hora || 'Sin hora'}</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">${cita.nombre || 'Sin Nombre'}</h3>
+                    <div class="text-slate-600 text-sm mt-1">
+                        <p>📧 ${cita.email}</p>
+                        <p>📞 ${cita.telefono}</p>
+                        <p class="mt-2 p-2 bg-slate-50 rounded text-slate-700 italic border border-slate-100">"${cita.motivo}"</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button onclick="cancelar('${cita.id}')" class="flex-1 md:flex-none border border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Cancelar Cita
+                    </button>
+                </div>
+            `;
+            return div;
+        };
+
+        window.cargarCitas = async () => {
+            const container = document.getElementById('citasContainer');
+            const loading = document.getElementById('loading');
+            const empty = document.getElementById('emptyState');
+
+            container.innerHTML = '';
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            try {
+                const obtenerCitas = httpsCallable(functions, 'obtenerCitas');
+                const result = await obtenerCitas();
+                const citas = result.data;
+
+                loading.classList.add('hidden');
+
+                if (!citas || citas.length === 0) {
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                citas.forEach(cita => {
+                    container.appendChild(renderCita(cita));
+                });
+
+            } catch (error) {
+                console.error(error);
+                loading.classList.add('hidden');
+                alert('Error al cargar las citas.');
+            }
+        };
+
+        window.cancelar = async (idCita) => {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer.')) return;
+
+            try {
+                const cancelarCita = httpsCallable(functions, 'cancelarCita');
+                await cancelarCita({ idCita });
+                alert('Cita cancelada correctamente.');
+                window.cargarCitas();
+            } catch (error) {
+                console.error(error);
+                alert('Error al cancelar la cita.');
+            }
+        };
+
+        // Init
+        checkAuth();
+        cargarCitas();
+
+    </script>
+</body>
+
+</html>

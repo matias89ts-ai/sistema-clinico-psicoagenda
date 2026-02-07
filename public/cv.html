@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV | Matías Traslaviña</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Inter", "sans-serif"], serif: ["Merriweather", "serif"] },
+                    colors: { navy: "#0f172a", slate: "#334155", blue: "#2563eb" }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            @page { margin: 0; size: A4; }
+            body { background: white; -webkit-print-color-adjust: exact; margin: 0; }
+            .no-print { display: none !important; }
+            a { text-decoration: none; color: inherit; }
+            .print-break { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-slate-800 font-sans print:bg-white">
+
+    <!-- BOTÓN DESCARGA -->
+    <div class="fixed bottom-8 right-8 no-print z-50 animate-bounce">
+        <button onclick="window.print()" class="bg-navy text-white px-6 py-3 rounded-full shadow-xl hover:bg-blue-700 transition-all flex items-center gap-2 font-bold cursor-pointer border border-white/20">
+            <i data-lucide="printer" class="w-5 h-5"></i> Guardar como PDF
+        </button>
+    </div>
+
+    <div class="max-w-[210mm] mx-auto bg-white shadow-2xl print:shadow-none min-h-screen flex flex-col md:flex-row print:flex-row">
+        
+        <!-- SIDEBAR (IZQUIERDA) -->
+        <aside class="w-full md:w-[32%] bg-[#0f172a] text-white p-8 print:w-[32%] print:bg-[#0f172a] print:text-white flex flex-col">
+            
+            <div class="mb-8 text-center">
+                <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center text-3xl font-serif font-bold border-2 border-white/20 mx-auto mb-4">MT</div>
+                <h2 class="text-lg font-bold tracking-widest uppercase">Contacto</h2>
+            </div>
+
+            <div class="space-y-4 text-sm mb-10 font-light">
+                <div class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-blue-400"></i> +56 9 4621 7905</div>
+                <div class="flex items-center gap-3"><i data-lucide="mail" class="w-4 h-4 text-blue-400"></i> matias89ts@gmail.com</div>
+                <div class="flex items-center gap-3"><i data-lucide="map-pin" class="w-4 h-4 text-blue-400"></i> Viña del Mar, Chile</div>
+                <div class="flex items-center gap-3"><i data-lucide="globe" class="w-4 h-4 text-blue-400"></i> psmtraslavina.web.app</div>
+                <div class="flex items-center gap-3"><i data-lucide="linkedin" class="w-4 h-4 text-blue-400"></i> in/mtraslavina</div>
+            </div>
+
+            <!-- SKILLS TÉCNICAS -->
+            <div class="mb-8">
+                <h3 class="text-blue-400 font-bold uppercase tracking-wider text-xs mb-3 border-b border-white/10 pb-1">Tech Stack & Cloud</h3>
+                <ul class="space-y-1.5 text-sm font-light opacity-90">
+                    <li>• <strong>Cloud:</strong> GCP (Google Cloud), Firebase (Functions, Hosting, Firestore).</li>
+                    <li>• <strong>Backend:</strong> Node.js, TypeScript, Serverless Architecture.</li>
+                    <li>• <strong>Frontend:</strong> JavaScript (ES6+), HTML5, Tailwind CSS.</li>
+                    <li>• <strong>Data:</strong> SQL Server, Oracle, NoSQL (Firestore).</li>
+                    <li>• <strong>Tools:</strong> Git, PowerShell, Jira, Power BI.</li>
+                </ul>
+            </div>
+
+            <!-- SKILLS DE GESTIÓN -->
+            <div class="mb-8">
+                <h3 class="text-blue-400 font-bold uppercase tracking-wider text-xs mb-3 border-b border-white/10 pb-1">Gestión & Metodologías</h3>
+                <ul class="space-y-1.5 text-sm font-light opacity-90">
+                    <li>• Scrum / Kanban</li>
+                    <li>• Gestión de Proyectos TI</li>
+                    <li>• Modelado de Procesos (UML)</li>
+                    <li>• Liderazgo de Equipos</li>
+                </ul>
+            </div>
+
+            <!-- IDIOMAS -->
+            <div>
+                <h3 class="text-blue-400 font-bold uppercase tracking-wider text-xs mb-3 border-b border-white/10 pb-1">Idiomas</h3>
+                <p class="text-sm font-light">Español (Nativo)</p>
+                <p class="text-sm font-light">Inglés (Avanzado)</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT (DERECHA) -->
+        <main class="w-full md:w-[68%] p-10 print:w-[68%] text-slate-700">
+            
+            <!-- HEADER -->
+            <header class="mb-8 border-b border-slate-200 pb-6">
+                <h1 class="text-4xl font-serif font-bold text-[#0f172a] mb-2 leading-none">MATÍAS TRASLAVIÑA</h1>
+                <h2 class="text-lg text-blue-600 font-bold tracking-wide uppercase">Ingeniero de Software & Psicólogo Clínico</h2>
+                <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                    Profesional híbrido con una trayectoria única que combina la ingeniería informática sólida (10+ años en banca, retail y salud) con la psicología clínica. Especializado en <strong>HealthTech</strong>, con capacidad probada para diseñar arquitecturas <strong>Serverless</strong> complejas, gestionar datos sensibles (EMR) y liderar proyectos tecnológicos con una visión centrada en la experiencia del paciente.
+                </p>
+            </header>
+
+            <!-- EXPERIENCIA -->
+            <section class="mb-8">
+                <h3 class="text-[#0f172a] font-bold uppercase tracking-wider text-sm mb-4 flex items-center gap-2 border-l-4 border-blue-600 pl-3">
+                    Experiencia Profesional Destacada
+                </h3>
+
+                <!-- PROYECTO ACTUAL -->
+                <div class="mb-6 print-break">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-slate-900 text-base">Consultor de Desarrollo HealthTech (Freelance)</h4>
+                        <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">2026 - Presente</span>
+                    </div>
+                    <p class="text-xs text-slate-500 italic mb-2">Proyecto: Sistema de Gestión Clínica EMR Serverless</p>
+                    <ul class="list-disc list-outside ml-4 space-y-1 text-sm text-slate-600">
+                        <li>Diseño y despliegue de una plataforma EMR (Electronic Medical Record) Full Stack en <strong>Google Cloud Platform</strong>.</li>
+                        <li>Implementación de arquitectura híbrida multi-región (Santiago/USA) usando <strong>Firebase Functions v2</strong> y <strong>Cloud Scheduler</strong>.</li>
+                        <li>Desarrollo de lógica transaccional compleja en <strong>TypeScript</strong> para gestión de concurrencia en agendamiento médico.</li>
+                        <li>Automatización de procesos de cobranza y notificaciones vía Email/WhatsApp mediante CronJobs.</li>
+                    </ul>
+                </div>
+
+                <!-- AGILESOFT -->
+                <div class="mb-6 print-break">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-slate-900 text-base">Software Engineer</h4>
+                        <span class="text-xs font-bold text-slate-500">2023 - 2024</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-2">AgileSoft (Sector Salud) | Cliente: Tisal S.A.</p>
+                    <ul class="list-disc list-outside ml-4 space-y-1 text-sm text-slate-600">
+                        <li>Liderazgo técnico en proyectos clave como "Agenda Única" y pasarela de pagos "MedPay".</li>
+                        <li>Gestión del ciclo de vida del software desde la toma de requerimientos hasta la implementación.</li>
+                    </ul>
+                </div>
+
+                <!-- SYSRETAIL -->
+                <div class="mb-6 print-break">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-slate-900 text-base">Service Manager</h4>
+                        <span class="text-xs font-bold text-slate-500">2019</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-2">Sysretail (Sector Retail)</p>
+                    <ul class="list-disc list-outside ml-4 space-y-1 text-sm text-slate-600">
+                        <li>Gestión de proyectos con grandes clientes bajo normas ISO 9001:2015.</li>
+                        <li>Liderazgo en la integración de proyectos de Data Warehouse.</li>
+                    </ul>
+                </div>
+
+                <!-- KLAP -->
+                <div class="mb-6 print-break">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="font-bold text-slate-900 text-base">Analista de Proyectos TI</h4>
+                        <span class="text-xs font-bold text-slate-500">2012 - 2018</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-2">Klap S.A / Ex-Multicaja (Medios de Pago)</p>
+                    <ul class="list-disc list-outside ml-4 space-y-1 text-sm text-slate-600">
+                        <li>Gestión de más de 300 convenios de pago y corresponsalía bancaria (Santander/BCI).</li>
+                        <li>Análisis de grandes volúmenes de datos transaccionales (9.800 comercios).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ACADÉMICO (ACTUALIZADO) -->
+            <section class="print-break">
+                <h3 class="text-[#0f172a] font-bold uppercase tracking-wider text-sm mb-5 flex items-center gap-2 border-l-4 border-blue-600 pl-3">
+                    Formación Académica
+                </h3>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="text-sm font-bold text-slate-800">Magíster en Psicopatología y Salud Mental</h4>
+                        <span class="text-xs text-slate-500">En Curso</span>
+                    </div>
+                    <p class="text-xs text-slate-600">Universidad Andrés Bello (UNAB)</p>
+                </div>
+
+                <!-- CAMBIO SOLICITADO: TÍTULO DE PSICÓLOGO -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="text-sm font-bold text-slate-800">Título de Psicólogo</h4>
+                        <span class="text-xs text-slate-500">2025</span>
+                    </div>
+                    <p class="text-xs text-slate-600">Universidad Andrés Bello (UNAB)</p>
+                </div>
+
+                <!-- CAMBIO SOLICITADO: INGENIERÍA 2011 -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="text-sm font-bold text-slate-800">Ingeniería en Computación e Informática</h4>
+                        <span class="text-xs text-slate-500">2011</span>
+                    </div>
+                    <p class="text-xs text-slate-600">Universidad Andrés Bello (UNAB)</p>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-baseline">
+                        <h4 class="text-sm font-bold text-slate-800">Analista Programador Computacional</h4>
+                        <span class="text-xs text-slate-500">2009</span>
+                    </div>
+                    <div class="text-xs text-slate-600">Duoc UC</div>
+                </div>
+                
+                <div class="mt-4 pt-2 border-t border-slate-100">
+                    <p class="text-xs text-slate-500 font-bold mb-1">Certificaciones Recientes</p>
+                    <ul class="text-xs text-slate-600 list-disc list-inside">
+                        <li>Diplomado Desarrollo de Aplicaciones Web (AIEP, 2025)</li>
+                        <li>Principios Básicos de BigData (Sence/Telefónica, 2025)</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

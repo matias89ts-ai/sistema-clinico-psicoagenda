@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmación de Reserva - Ps. Matías Traslaviña</title>
+<style>
+    /* Estilos generales para asegurar compatibilidad */
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .header { background-color: #e8f0fe; /* Un azul muy suave, cambiable por verde salvia #e8f5e9 */ padding: 0; text-align: center; }
+    .header-img { width: 100%; max-height: 250px; object-fit: cover; display: block; }
+    .content { padding: 40px 30px; color: #444444; line-height: 1.6; }
+    .h1-title { color: #2c3e50; font-size: 24px; margin-bottom: 20px; font-weight: 600; }
+    .highlight-box { background-color: #f8f9fa; border-left: 5px solid #5c8cac; padding: 20px; margin: 25px 0; border-radius: 4px; }
+    .info-item { margin-bottom: 10px; font-size: 15px; }
+    .info-label { font-weight: 700; color: #5c8cac; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    .footer { background-color: #333333; color: #b0b0b0; text-align: center; padding: 20px; font-size: 13px; }
+    .footer a { color: #ffffff; text-decoration: none; }
+    
+    /* Botón opcional si quisieras un CTA */
+    .btn { display: inline-block; background-color: #5c8cac; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="email-container">
+    <div class="header">
+        <img src="https://via.placeholder.com/600x200/5c8cac/ffffff?text=Hola,+gracias+por+contactarte" alt="Bienvenida Ps. Matías Traslaviña" class="header-img" style="color: #5c8cac;"> 
+    </div>
+
+    <div class="content">
+        <div class="h1-title">Hola, {{NOMBRE_PACIENTE}}</div>
+
+        <p>Gracias por contactarte y por la confianza.</p>
+        
+        <p>Mi nombre es <strong>Matías Traslaviña</strong>. Te escribo para dejar confirmada oficialmente nuestra primera sesión, la cual tendrá como objetivo iniciar el proceso de <strong>psicodiagnóstico</strong>. En esta instancia conversaremos sobre los motivos de tu consulta y definiremos el encuadre de nuestro trabajo.</p>
+
+        <div class="highlight-box">
+            <div class="info-item">
+                <div class="info-label">Fecha</div>
+                <div>{{FECHA_SESION}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Hora</div>
+                <div>{{HORA_SESION}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ubicación / Enlace</div>
+                <div><a href="{{LINK_UBICACION}}" style="color: #5c8cac; text-decoration: underline;">{{UBICACION_TEXTO}}</a></div>
+            </div>
+        </div>
+
+        <p style="font-size: 14px; color: #777;">
+            <em>*Si necesitas reprogramar tu cita, te agradezco avisar con al menos 24 horas de anticipación respondiendo a este correo.*</em>
+        </p>
+
+        </div>
+
+    <div class="footer">
+        <p><strong>Ps. Matías Traslaviña</strong><br>Psicólogo Clínico</p>
+        <p style="font-size: 11px; margin-top: 10px;">
+            Este correo fue enviado automáticamente como confirmación de reserva.<br>
+            <a href="#">Tu Sitio Web</a> | <a href="#">LinkedIn</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

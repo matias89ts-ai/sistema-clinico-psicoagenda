@@ -1,0 +1,22 @@
+﻿# Dependencias masivas
+node_modules/
+functions/node_modules/
+
+# Archivos compilados (se generan solos)
+functions/lib/
+
+# Archivos de sistema y logs
+.DS_Store
+*.log
+npm-debug.log*
+
+# Caché local de Firebase
+.firebase/
+
+# SECRETOS Y CLAVES (CRÍTICO)
+.env
+functions/.env
+functions/src/.env
+
+# Editor config
+.vscode/
